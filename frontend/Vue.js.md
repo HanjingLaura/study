@@ -6,6 +6,19 @@ draft: false
 ## Vue.js
 - 声明式渲染
     - Vue是单文件组件（SFC：Single-File Component）
+        - ```
+            <template>
+            <!-- HTML 模板 -->
+            </template>
+
+            <script setup>
+            // JavaScript / TypeScript
+            </script>
+
+            <style scoped>
+            /* CSS */
+            </style>
+
     - 将属于同一个组件的HTML，CSS和JavaScript封装在.vue后缀的文件中
     - Vue的核心功能是声明式渲染
         - 通过扩展于标准HTML的模板语法，可根据JavaScript的状态来描述HTML应该是什么样子的，当状态改变时,HTML会自动更新
@@ -23,6 +36,18 @@ draft: false
                 }
             }
             <h1>{{ message }}</h1>
+- 响应式数据
+    - ref
+        - ```
+            import { ref } from 'vue'
+            const count = ref(0)
+    - reactive
+        - ```
+            import { reactive } from 'vue'
+            const user = reactive({
+            name: 'Tom',
+            age: 18
+            })
 - Attribute绑定
     - mustache语法(即{{}})只能用于文本插值
     - 为了给attribute绑定一个动态值，需要使用v-bind指令
@@ -128,4 +153,72 @@ draft: false
     - 可以使用computed选项声明一个响应式的属性，它的值由其他属性计算而来
         - 语法
             - ```
-              
+                import { computed } from 'vue'
+
+                const price = ref(100)
+                const total = computed(() => price.value * 2)     
+- 监听器
+    - watch
+        - 语法
+            - ```
+                import { watch } from 'vue'
+
+                watch(count, (newVal, oldVal) => {
+                console.log(newVal, oldVal)
+                })  
+            - 监听对象:
+            - ```
+                watch(user, () => {}, { deep: true })     
+- 生命周期函数
+    - 语法
+        - ```
+            import { onMounted, onUnmounted } from 'vue'
+
+            onMounted(() => {
+            console.log('组件挂载完成')
+            })
+
+            onUnmounted(() => {
+            console.log('组件卸载')
+            })
+- 组件通信
+    - 父->子(porps)
+        - 父组件
+            - ```<Child :msg="message" />```
+        - 子组件
+            - ```
+                const props = defineProps({
+                    msg: String
+                })
+    - 子->父
+        - 子组件
+            - ```
+                const emit = defineEmits(['submit'])
+
+                emit('submit', data)
+        - 父组件
+            - ```<Child @submit="handle" />```
+    - 插槽(slot)
+        - <slot></slot>
+- 路由Vue Router
+    - 语法
+        - ```import { createRouter, createWebHistory } from 'vue-router'```
+        - ```
+            <router-link to="/home">首页</router-link>
+            <router-view />
+- 状态管理Pinia
+    - 语法
+        - ```
+            import { defineStore } from 'pinia'
+
+            export const useUserStore = defineStore('user', {
+            state: () => ({ name: '' })
+            })
+- 接口请求(axios)
+    - 语法
+        - ```
+            import axios from 'axios'
+
+            axios.get('/api/data').then(res => {
+            console.log(res.data)
+            })

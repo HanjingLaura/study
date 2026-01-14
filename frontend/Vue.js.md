@@ -1,8 +1,9 @@
 ---
-title: "前端开发"
+title: "Vue.js"
 date: 2025-11-11
 draft: false
 ---
+
 ## Vue.js
 - 声明式渲染
     - Vue是单文件组件（SFC：Single-File Component）

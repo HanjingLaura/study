@@ -1,5 +1,5 @@
 ---
-title: "前端开发"
+title: "JavaScript"
 date: 2025-11-03
 draft: false
 ---

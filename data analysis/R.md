@@ -1,5 +1,5 @@
 ---
-title: "R
+title: "R"
 date: 2025-01-14
 draft: false
 ---

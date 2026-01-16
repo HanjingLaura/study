@@ -60,6 +60,8 @@ draft: false
     - 代码示例   
         ```
         ui <- fluidPage(
+        textInput("name","输入名字"),
+
         plotOutput(outputId = "my_plot"),
         textOutput(outputId = "my_text")
         )
@@ -85,18 +87,34 @@ draft: false
     - 当输入改变时，相关联的输出会自动更新
     - 代码示例   
         ```
+        library(shiny)
+        ui <- fluidPage(
+        numericInput("n","输入数字",1),
+        
+        plotOutput("plot")
+        )
+
         server <- function(input, output) {
         # 创建响应式表达式
         data <- reactive({
             rnorm(input$n)
         })
-
+        
         output$plot <- renderPlot({
             hist(data()) # 注意：调用响应式变量需要加括号 ()
         })
         }
+        shinyApp(ui=ui,server=server)
         ``` 
         ```
+        library(shiny)
+        ui <- fluidPage(
+        numericInput("n","输入数字",1),
+        
+        plotOutput("plot1"), 
+        plotOutput("plot2")
+        )
+
         server <- function(input, output) {
         # 只有当 input$n 改变时，这段逻辑才会运行
         processed_data <- reactive({
@@ -107,6 +125,8 @@ draft: false
         output$plot1 <- renderPlot({ hist(processed_data()) })
         output$plot2 <- renderPlot({ plot(processed_data()) })
         }
+
+        shinyApp(ui=ui,server=server)
         ```  
     - 关键语法说明
         - reactive: 具有“懒惰”特性，只有在被output 调用且依赖项改变时才计算

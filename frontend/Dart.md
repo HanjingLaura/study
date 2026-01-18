@@ -220,3 +220,59 @@ draft: false
             - 抽象类和接口 
                 - 使用abstract关键字声明一个抽象类(没有实现体)
                 - 使用implements关键字继承并实现抽象类
+    - 类的混入
+        - 在不使用传统继承的情况下，想类中添加新的功能
+        - 使用mixin关键字定义一个对象
+        - 使用with关键字将定义的对象混入到当前对象
+        - 一个类支持with多个mixin，调用优先级遵循后来居上原则，即后混入的会覆盖先混入的同名方法
+    - Dart中泛型
+        - Dart中允许使用类型参数，限定类型的同时又让类型更加灵活，让代码更加健壮和维护性更强
+        - eg：List类型中只想存储String类型，函数返回值希望和参数一个类型
+        - 分类 
+            - 泛型集合
+            - 泛型方法
+            - 泛型类
+        - 语法
+            - List<String>
+            - Map<String,int>
+            - T getValue<T>(T value){
+                return value;
+            }
+    - 异步编程
+        - Dart是单线程语言，即同时只能做一件事，遇到耗时任务会造成程序堵塞，此时需要异步编程
+        - 采用单线程+事件循环的机制完成耗时任务的处理
+        - 事件循环
+            - 执行同步代码->执行微任务队列->执行事件队列->结束
+            - 微任务队列
+                - Future.microtask()
+            - 事件队列
+                - Future,Future.delayed(),I/O操作（文件，网络）
+        - Future
+            - 代表一个异步操作的最终结果
+            - 状态 
+                - Uncompleted：等待
+                - Completed with a value：成功
+                - Completed with a error：失败
+            - 创建：Future((){})
+            - 执行成功：不抛出异常-成功状态-then((){})
+            - 执行失败：throw Exception()-失败状态-catchError((){})
+        - 链式调用
+            - 可通过链式的方式连续得到异步的结果
+            - 语法
+                - Future().then()拿到执行成功的结果
+                - Future().Error()拿到执行失败的结果
+                - 在上一个the返回对象会在下一个then中接收 
+        - 异步编程
+            - 除了then/catchError的方式，还可以通过async/await来实现异步编程
+          - await总是等到后面的Future执行成功，才执行下方逻辑，async必须配套await出现
+          - 语法
+                ```
+                函数名()asnyc{
+                    try{
+                        await Future();
+                        //Future执行成功才执行的逻辑
+                    }
+                    catch(error){
+                        //执行失败的逻辑
+                    }
+                } 

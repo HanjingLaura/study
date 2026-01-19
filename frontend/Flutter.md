@@ -20,3 +20,4 @@ draft: false
         - test：测试文件目录
         - web：Web平台特定的配置和资源文件
         - pubspec.yaml：项目依赖和配置文件
+        - build：构建产物目录

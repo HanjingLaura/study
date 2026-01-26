@@ -268,3 +268,209 @@ draft: false
         - 安装dio：flutter pub add dio
         - 基本使用：Dio().get(地址).then().catchError()
         - 一般情况下在初始化状态initState获取页面数据
+    - 网络请求案例
+        - Dio封装过程
+            - 创建工具类
+            - 构造函数中设置基础地址和超时时间
+            - 添加各类拦截器
+            - 封装统一请求方法
+            - 请求频道数据进行循环渲染解决web端跨域问题
+            - 实现UI渲染绘制
+        - Dio工具封装
+            - 基础地址
+            - 超时时间
+            - 拦截器
+            - 请求方法
+            - ```
+                class DioUtils {
+                final Dio _dio = Dio();
+                DioUtils(){
+                    // _dio.options.baseUrl = 'https://geek.itheima.net/v1_0s/';
+                    // _dio.options.connectTimeout = Duration(seconds: 10);
+                    // _dio.options.sendTimeout = Duration(seconds: 10);
+                    // _dio.options.receiveTimeout = Duration(seconds: 10);
+                    _dio.options
+                    ..baseUrl = 'https://geek.itheima.net/v1_0s/'
+                    ..connectTimeout = Duration(seconds: 10)
+                    ..sendTimeout = Duration(seconds: 10)
+                    ..receiveTimeout = Duration(seconds: 10);
+                    
+                    // 添加拦截器
+                    _addInterceptors();
+                  } 
+                void _addInterceptors() {
+                _dio.interceptors.add(InterceptorsWrapper(
+                    onRequest: (context,handler){
+                      handler.next(context);
+                      },//请求拦截器
+                    onResponse: (context,handler){
+                    if(context.statusCode!>=200 && context.statusCode!<300){
+                        handler.next(context);
+                      }
+                    else{
+                        handler.reject(DioException(requestOptions: context.requestOptions));
+                      }
+                    },//响应拦截器
+                    onError: (context,handler){
+                      handler.reject(context);
+                    },//错误拦截器
+                  ));
+                }
+                get(String url,{Map<String,dynamic>? params}) {
+                    return _dio.get(url, queryParameters: params);
+                  }
+                }  
+        - 初始化获取数据
+            - ```
+                class _MainPageState extends State<MainPage> {
+                @override
+                void initState() {
+                    // TODO: implement initState
+                    super.initState();
+
+                    //发起网络请求
+                    _getChannels();
+                }
+
+                void _getChannels() async{
+                    DioUtils util = DioUtils();
+                    Response<dynamic> result = await util.get("channels");
+                    Map<String,dynamic> res = result.data as Map<String,dynamic>;
+
+                    List data = res["data"]["channels"] as List;
+                    List _list = data.cast<Map<String,dynamic>>() as List<Map<String,dynamic>>;
+                    //cast 强制转换列表项类型
+
+                    setState(() {});
+                    print(_list);
+                }
+
+                @override
+                Widget build(BuildContext context) {
+                    return MaterialApp(
+                    home: Scaffold(
+                        appBar: AppBar(
+                        title: Text('频道管理'),
+                        ),
+                        body: Text('内容')
+                    ),
+                    );
+                }
+                }
+        - 解决web端跨域问题
+            - 默认情况下flutter运行web端加载网络资源会报跨域提示错误
+            - 解决步骤
+                - 在flutter/packages/flutter_tools/lib/src/web/chrome.dart中添加'--disable-web-security'
+                - 删除flutter/bin/cache/下flutter_tools.snaphot和flutter_tools.stamp
+                - 执行flutter doctor -v然后重新运行项目
+        - 父子组件通信
+            - ```
+                import 'package:dio/dio.dart';
+                import 'package:flutter/material.dart';
+
+                void main() {
+                runApp(MaterialApp(home: MainPage()));
+                }
+
+                class MainPage extends StatefulWidget {
+                const MainPage({super.key});
+
+                @override
+                State<MainPage> createState() => _MainPageState();
+                }
+
+                class _MainPageState extends State<MainPage> {
+                // 1. 定义类成员变量来存储数据
+                List<Map<String, dynamic>> _list = [];
+                bool _isLoading = true;
+
+                @override
+                void initState() {
+                    super.initState();
+                    _getChannels();
+                }
+
+                void _getChannels() async {
+                    try {
+                    // 2. 使用单例或持久化的工具类
+                    DioUtils util = DioUtils();
+                    Response result = await util.get("channels");
+
+                    // 3. 安全解析数据 (注意层级：res -> data -> channels)
+                    final channelsData = result.data['data']?['channels'];
+
+                    if (channelsData != null && channelsData is List) {
+                        setState(() {
+                        _list = List<Map<String, dynamic>>.from(channelsData);
+                        _isLoading = false;
+                        });
+                    }
+                    } catch (e) {
+                    setState(() => _isLoading = false);
+                    print("请求失败: $e");
+                    }
+                }
+
+                @override
+                Widget build(BuildContext context) {
+                    return Scaffold(
+                    appBar: AppBar(title: Text('频道管理')),
+                    body: GridView.extent(
+                        padding: EdgeInsets.all(10),
+                        maxCrossAxisExtent: 140,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        children: List.generate(_list.length, (index) {
+                        return ChannelItem(item: _list[index]);
+                        }),
+                    ),
+                    );
+                }
+                }
+
+                class ChannelItem extends StatelessWidget {
+                final Map<String, dynamic>? item;
+                const ChannelItem({super.key,required this.item});
+
+                @override
+                Widget build(BuildContext context) {
+                    return Container(
+                    // ignore: deprecated_member_use
+                    color:Colors.blue,
+                    alignment: Alignment.center,
+                    child:Text(item?['name'] ?? "",style:TextStyle(color:Colors.white) ),
+                    );
+                }
+                }
+
+                // 优化后的 Dio 工具类
+                class DioUtils {
+                // 使用静态变量实现简单单例
+                static final Dio _dio = Dio(BaseOptions(
+                    baseUrl: 'https://geek.itheima.net/v1_0/',
+                    connectTimeout: Duration(seconds: 100),
+                    receiveTimeout: Duration(seconds: 100),
+                ));
+
+                DioUtils() {
+                    // 避免重复添加拦截器
+                    if (_dio.interceptors.isEmpty) {
+                    _addInterceptors();
+                    }
+                }
+
+                void _addInterceptors() {
+                    _dio.interceptors.add(InterceptorsWrapper(
+                    onRequest: (options, handler) => handler.next(options),
+                    onResponse: (response, handler) {
+                        // 这里的逻辑可以根据业务需求简化
+                        handler.next(response);
+                    },
+                    onError: (e, handler) => handler.next(e),
+                    ));
+                }
+
+                Future<Response> get(String url, {Map<String, dynamic>? params}) {
+                    return _dio.get(url, queryParameters: params);
+                }
+                }

@@ -209,7 +209,53 @@ draft: false
             - 设置对称方向的边距：使用EdgeInsets.symmetric(horizont:50,vertical:20)
     - 线性布局
         - Row
+            - 作用：用于水平排列其子组件的核心布局容器
+            - 属性
+                - mainAxisAlignment
+                    - 类型：MainAxisAlignment
+                        - space-between
+                        - space-around
+                        - space-evently
+                        - start
+                        - end
+                    - 控制子组件在主轴（垂直方向）上的排列方式
+                - crossAxisAlignment
+                    - 类型：CrossAxisAlignment
+                        - start
+                        - center
+                        - end
+                    - 控制子组件在交叉轴（水平方向）上的排列方式
+                - mainAxisSize
+                    - 类型：MainAxisSize
+                    - 决定Column本身在垂直方向上的尺寸策略是max还是min
+                - children
+                    - 类型：List<Widget>
+                    - 需要被垂直排列的子组件列表 
+            - 注意：Row本身不支持滚动，如内容超出需要ListView或者SingleChildScrollView包裹 
         - Column
+            - 作用：用于垂直排列其子组件的核心布局容器
+            - 属性
+                - mainAxisAlignment
+                    - 类型：MainAxisAlignment
+                        - space-between
+                        - space-around
+                        - space-evently
+                        - start
+                        - end
+                    - 控制子组件在主轴（垂直方向）上的排列方式
+                - crossAxisAlignment
+                    - 类型：CrossAxisAlignment
+                        - start
+                        - center
+                        - end
+                    - 控制子组件在交叉轴（水平方向）上的排列方式
+                - mainAxisSize
+                    - 类型：MainAxisSize
+                    - 决定Column本身在垂直方向上的尺寸策略是max还是min
+                - children
+                    - 类型：List<Widget>
+                    - 需要被垂直排列的子组件列表
+            - 注意：Column本身不支持滚动，如内容超出需要ListView或者SingleChildScrollView包裹
     - 弹性布局
         - Flex
         - Expanded

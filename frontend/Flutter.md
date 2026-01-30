@@ -258,6 +258,12 @@ draft: false
             - 注意：Column本身不支持滚动，如内容超出需要ListView或者SingleChildScrollView包裹
     - 弹性布局
         - Flex
+            - 作用：允许沿一个主轴排列其子组件，灵活地控制这些子组件在主轴上的尺寸比例和空间分配
+            - 属性
+                - direction
+                - mainAxisAlignment
+                - crossAxisAlignment
+                - mainAxisSize
         - Expanded
         - Flexible
     - 层叠布局

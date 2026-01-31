@@ -261,9 +261,17 @@ draft: false
             - 作用：允许沿一个主轴排列其子组件，灵活地控制这些子组件在主轴上的尺寸比例和空间分配
             - 属性
                 - direction
+                    - 类型：Axis.horizontal/Axis.vertical
+                    - 作用：主轴方向
                 - mainAxisAlignment
+                    - 类型：MainAxisAlignment
+                    - 作用：子组件在主轴上的对齐方式
                 - crossAxisAlignment
+                    - 类型：CrossAxisAlignment
+                    - 作用：紫菊间在交叉轴上的对齐方式
                 - mainAxisSize
+                    - 类型：MainAxisSize
+                    - 作用哦滚：Flex容器自身在主轴上的尺寸策略
         - Expanded
         - Flexible
     - 层叠布局

@@ -272,8 +272,13 @@ draft: false
                 - mainAxisSize
                     - 类型：MainAxisSize
                     - 作用哦滚：Flex容器自身在主轴上的尺寸策略
+            - 子组件：Flex子组件常使用Expanded或Flexible来控制空间分配
+            - Flex是Column和Row的结合体
+            - Expanded和Flexible作为Flex的子组件通过flex属性来分配Flex组件空间
         - Expanded
+            - 强制子组件填满所有剩余空间
         - Flexible
+            - 根据自身大小调整，不强制占满空间
     - 层叠布局
         - Stack
         - Positioned
@@ -285,8 +290,50 @@ draft: false
         - GridView 
     - 文本组件
         - Text
+            - 作用：用户界面显示文本的基本组件
+            - 属性
+                - data
+                    - 属性：String
+                    - 必须，要显示的文本内容
+                - style
+                    - 属性：TextStyle
+                    - 文本样式
+                - textAlign
+                    - TextAlign
+                    - 文本在容器的水平对齐方式
+                    - .center/.left/.right
+                - maxLines
+                    - 类型：int
+                    - 文本显示最大行数
+            - TextSpan
+                - 同一段文本显示不同样式
+                - 用Text.rich构造函数配合TextSpan来实现
     - 图片组件
         - Image
+            - 作用：在用户界面显示图片
+            - 分类
+                - Image.asset()
+                    - 加载asset（资源目录）中的图片，需要在pubspec.yaml中声明路径
+                - Image.network()
+                    - 直接从网络地址加载图片
+                    - 注意配置网络权限
+                - Image.file()
+                    - 加载设备本地存储中的图片文件
+                - Image.memory()
+                    - 加载内存中的图片数据
+            - 属性
+                - width/height
+                    - 类型：double
+                    - 设置图片显示宽高
+                - fit
+                    - 类型：BotFit
+                    - 控制图片如何适应显示区域
+                - alignment
+                    - 类型：AlignmentGeometry
+                    - 图片在显示区域的对齐方式
+                - repeat
+                    - 类型：ImageRepeat
+                    - 当图片小于显示区域时，设置是否重复平铺
     - 文本输入组件
         - TextField   
     - 常用滚动组件
@@ -322,6 +369,175 @@ draft: false
             - 父组件传递给子组件
             - 有状态组件在对外的类接收属性，对内的类通过Widget获取对应属性
             - 注意：子组件定义接收属性需要final关键字
+            - ```
+                //无状态组件
+                import 'package:flutter/material.dart';
+
+                void main() {
+                runApp(MainPage());
+                }
+
+                class MainPage extends StatelessWidget {
+                @override
+                Widget build(BuildContext context) {
+                    return MaterialApp(
+                    title: 'Main Page',
+                    home: Scaffold(
+                        appBar: AppBar(
+                        title: Text('Main Page'),
+                        ),
+                        body: Center(
+                        child: Column(
+                            children: [
+                            Text('父组件', style: TextStyle(fontSize: 30,color: Colors.blue)),
+                            Child(message: "message",),
+                            ],
+                        )
+                        ),
+                    ),
+                    );
+                }
+                }
+
+                class Child extends StatelessWidget {
+                final String? message;// 这里定义了一个属性
+
+                const Child({super.key,this.message}); // 通过构造函数接收属性值
+
+                @override
+                Widget build(BuildContext context) {
+                    return Container(
+                    child: Text('子组件接收 $message', style: TextStyle(fontSize: 20,color: Colors.red)),
+                    );
+                }
+                }
+            - ```
+                //有状态组件
+                import 'package:flutter/material.dart';
+
+                void main() {
+                runApp(MainPage());
+                }
+
+                class MainPage extends StatelessWidget {
+                @override
+                Widget build(BuildContext context) {
+                    return MaterialApp(
+                    title: 'Main Page',
+                    home: Scaffold(
+                        appBar: AppBar(
+                        title: Text('Main Page'),
+                        ),
+                        body: Center(
+                        child: Column(
+                            children: [
+                            Text('父组件', style: TextStyle(fontSize: 30,color: Colors.blue)),
+                            Child(message: "message",),
+                            ],
+                        )
+                        ),
+                    ),
+                    );
+                }
+                }
+
+                class Child extends StatefulWidget {
+                final String? message;
+
+                const Child({super.key,this.message});
+
+                @override
+                State<Child> createState() => _ChildState();
+                }
+
+                class _ChildState extends State<Child> {
+                @override
+                Widget build(BuildContext context) {
+                    return Container(
+                    child:Text("子组件接收${widget.message}", style: TextStyle(fontSize: 20,color: Colors.red)),
+                    );
+                }
+                }
+    - 子传父（回调函数）
+        - 步骤
+            - 父组件传递一个函数给子组件
+            - 子组件调用该函数
+            - 父组件通过回调函数获取参数
+            - ```
+                import 'package:flutter/material.dart';
+
+                void main() {
+                runApp(const MainPage());
+                }
+
+                class MainPage extends StatefulWidget {
+                const MainPage({super.key});
+
+                @override
+                State<MainPage> createState() => _MainPageState();
+                }
+
+                class _MainPageState extends State<MainPage> {
+                List<String> _list = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
+                @override
+                Widget build(BuildContext context) {
+                    return MaterialApp(
+                    home: Scaffold(
+                        body: GridView.count(
+                        crossAxisCount: 2,
+                        children: List.generate(_list.length, (index) {
+                            return Child(
+                            foodName: _list[index], 
+                            foodList: _list, 
+                            index: index, 
+                            delFood:(int index){
+                                print("成功子传父");
+                                _list.removeAt(index);
+                                setState(() {});
+                            },
+                            );
+                        }),
+                        ),
+                    ),
+                    );
+                }
+                }
+
+                class Child extends StatefulWidget {
+                final String? foodName;
+                final List<String>? foodList;
+                final int? index;
+                final Function(int index) delFood;
+
+                const Child({super.key,required this.foodName, this.foodList, this.index,required this.delFood});
+
+                @override
+                State<Child> createState() => _ChildState();
+                }
+
+                class _ChildState extends State<Child> {
+                @override
+                Widget build(BuildContext context) {
+                    return Stack(
+                    alignment: Alignment.topRight,
+                    children: [
+                        Container(
+                        color: Colors.blue,
+                        margin: EdgeInsets.all(8),
+                        alignment: Alignment.center,
+                        child: Text(widget.foodName!, style: TextStyle(fontSize: 24,color: Colors.white )),
+                        ),
+                        IconButton(
+                        onPressed: (){
+                            print("delete${widget.foodList![widget.index!]}");
+                            widget.delFood(widget.index!);
+                        }, 
+                        icon: Icon(Icons.delete, color: Colors.red,),
+                        )
+                    ],
+                    );
+                }
+                }
 - 网络请求
     - Dio插件使用
         - flutter最常用的网络请求工具是Dio插件
@@ -534,3 +750,99 @@ draft: false
                     return _dio.get(url, queryParameters: params);
                 }
                 }
+- 路由管理
+    - 概述
+        - 通过Navigator和Router来管理页面栈，实现页面跳转和返回
+        - 步骤
+            - 用户操作/代码调用
+            - Navigator操作
+                - push
+                    - 新Router入栈
+                    - 新页面显示维栈顶
+                - pop
+                    - 当前Router出栈
+                    - 上一页面显示成为新栈顶
+            - 页面状态更新
+    - 基本路由
+        - 场景：页面不多，跳转逻辑简单
+        - 用法：跳转时创建MaterialPageRoute实例
+        - ```
+            import 'package:flutter/material.dart';
+
+            void main() {
+            runApp(MainPage());
+            }
+
+            class MainPage extends StatelessWidget {
+            const MainPage({super.key});
+
+            @override
+            Widget build(BuildContext context) {
+                return MaterialApp(
+                home: ListPage(),
+                );
+            }
+            }
+
+            //列表页
+            class ListPage extends StatefulWidget {
+            const ListPage({super.key});
+
+            @override
+            State<ListPage> createState() => _ListPageState();
+            }
+
+            class _ListPageState extends State<ListPage> {
+            @override
+            Widget build(BuildContext context) {
+                return Scaffold(
+                appBar: AppBar(
+                    title: const Text("列表页"),
+                ),
+                body: ListView.builder(
+                    padding: EdgeInsets.all(10),
+                    itemCount: 20,
+                    itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                        onTap:(){
+                        print("点击了列表项${index+1}");
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>DetailPage()));
+                        },
+                        child:Container(
+                        color: Colors.blue,
+                        margin: EdgeInsets.only(top: 10),
+                        height: 100,
+                        alignment: Alignment.center,
+                        child: Text("列表项${index+1}",style: TextStyle(color: Colors.white,fontSize: 20,)),
+                    )
+                    );
+                    },
+                ),
+                );
+            }
+            }
+
+            class DetailPage extends StatefulWidget {
+            const DetailPage({super.key});
+
+            @override
+            State<DetailPage> createState() => _DetailPageState();
+            }
+
+            class _DetailPageState extends State<DetailPage> {
+            @override
+            Widget build(BuildContext context) {
+                return Scaffold(
+                appBar: AppBar(
+                    title: Text("详情页"),
+                ),
+                body: Center(
+                    child:TextButton(onPressed: () {
+                    print("返回列表项");
+                    Navigator.pop(context);
+                    }, child: Text("返回列表页")
+                    )
+                ),
+                );
+            }
+            }

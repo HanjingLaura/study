@@ -848,4 +848,28 @@ draft: false
             }
 - Flutter项目
     - 创建web项目和git管理
-    - 
+        - 案例开发规划
+            - 首先完成纯web端功能
+            - 开发过程串联之前的基础知识，扩展插件，弹层，provider，getx等技术
+            - 开始多端适配
+        - 创建项目
+            - 首选创建适配web平台项目
+                - flutter create --platform web <项目名称>
+            - 创建基本目录结构
+                - -lib
+                    - -api #存放请求
+                    - -assets #存放资源
+                    - -components #存放公共组件
+                    - -contants #存放常量文件
+                    - -viewmodels #存放类型文件
+                    - -pages #存放页面
+                    - -routers #存放路由配置
+                    - -stores #存放全局状态组件
+                    - -utils #存放工具类
+                    - -main.dart #入口
+            - 创建本地和远程仓库并提交
+                - git init #初始化仓库
+                - git add #提交本地仓库到暂存区
+                - git commit -m "初始化仓库" #提交本地仓库
+                - git remote add origin master <远程仓库地址> #添加远程仓库
+                - git push -u origin master #推送主分支到远程

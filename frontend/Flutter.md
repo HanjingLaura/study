@@ -281,9 +281,52 @@ draft: false
             - 根据自身大小调整，不强制占满空间
     - 层叠布局
         - Stack
+            - 作用：层叠布局组件，允许将多个子组件按照Z轴方向进行叠加排列
+            - 属性
+                - alignment
+                    - 类型：AlignmentGeometry
+                    - 作用：控制非定位子组件在Stack内的对齐方式，默认左上角
+                - fit
+                    - 类型：StackFit
+                    - 作用：控制非定位子组件如何适应Stack的尺寸
+                - clipBehavior
+                    - 类型：Clip
+                    - 作用：控制子组件超出Stack边界时的裁剪方式
+                - children
+                    - 类型：List<widget>
+                    - 作用：需要被层叠排列的子组件列表
+            - 搭档：Positioned
         - Positioned
+            - 作用：对子组件进行精确定位控制
+            - 必须为Stack的 直接子组件
+            - 通过left，right，top，bottom来将子组件钉在Stack的某个角落或边缘
     - 流式布局
         - Wrap
+            - 作用：流式布局组件，当子组件在主轴方向上排列不下时，会自动换行或换列
+            - 属性
+                - direction
+                    - 常用值
+                        - Axis.horizontal水平
+                        - Axis.vertical垂直
+                    - 作用：设置主轴方向
+                - spacing
+                    - 常用值
+                        - 数值
+                    - 作用：主轴上子组件之间的距离
+                - runSpacing
+                    - 常用值
+                        - 数值
+                    - 作用：交叉轴方向行或列之间的距离
+                - alignment
+                    - 常用值
+                        - WrapAlignment
+                    - 作用：子组件在主轴方向上的对齐方式
+                - runAlignment
+                    - 常用值
+                        - WrapAlignment
+                    - 作用：交叉轴上的对齐方式
+            - 注意：Column/Row/Flex内容超出均不会换行
+            - 当子组件内容时根据数据动态生成时，使用Wrap可以确保布局始终适配
         - Flow
     - 滚动布局 
         - ListView
@@ -336,6 +379,20 @@ draft: false
                     - 当图片小于显示区域时，设置是否重复平铺
     - 文本输入组件
         - TextField   
+            - 作用：实现文本输入功能的核心组件
+            - 属性
+                - controller
+                    - 文本编辑器的控制器，用于获取，设置文档内容及监听变化
+                - decortation
+                    - 当时输入框的外观
+                - style
+                    - 定义输入文本的样式
+                - maxLines
+                    - 最大行数
+                - onChanged
+                    - 输入内容变化时执行的回调函数
+                - onSubmitted
+                    - 提交输入时的回调函数
     - 常用滚动组件
         - SingleChildScrollView
         - ListView

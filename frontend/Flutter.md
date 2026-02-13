@@ -393,12 +393,134 @@ draft: false
                     - 输入内容变化时执行的回调函数
                 - onSubmitted
                     - 提交输入时的回调函数
+            - ```
+                import 'package:flutter/material.dart';
+
+                void main() {
+                runApp(MainPage());
+                }
+
+                class MainPage extends StatefulWidget {
+                const MainPage({super.key});
+
+                @override
+                State<MainPage> createState() => _MainPageState();
+                }
+
+                class _MainPageState extends State<MainPage> {
+                TextEditingController _phoneController = TextEditingController();//账号控制器
+                TextEditingController _codeController = TextEditingController();//密码控制器
+
+                @override
+                Widget build(BuildContext context) {
+                    return MaterialApp(
+                    home: Scaffold(
+                        appBar: AppBar(
+                        title: const Text('登录'),
+                        ),
+                        body: Container(
+                        padding:EdgeInsets.all(20),
+                        color:Colors.white,
+                        child:Column(
+                            children: [
+                            TextField(
+                                controller: _phoneController,
+                                onChanged: (value) {
+                                print(value);
+                                },
+                                onSubmitted: (value) {
+                                print(value);
+                                },
+                                decoration: InputDecoration(
+                                contentPadding: EdgeInsets.only(left: 20),
+                                filled: true,
+                                fillColor: const Color.fromARGB(255, 222, 219, 207),
+                                hintText: '请输入账号',
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.all(Radius.circular(25))
+                                )
+                                
+                                ),
+                            ),
+                            SizedBox(height: 10),
+                            TextField(
+                                obscureText: true,
+                                controller: _codeController,
+                                decoration: InputDecoration(
+                                contentPadding: EdgeInsets.only(left: 20),
+                                filled: true,
+                                fillColor: const Color.fromARGB(255, 222, 219, 207),
+                                hintText: '请输入密码',
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.all(Radius.circular(25))
+                                )
+                                ),
+                            ),
+                            SizedBox(height: 10),
+                            Container(
+                                height: 50,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.all(Radius.circular(25))
+                                ),
+                                child:TextButton(
+                                onPressed: (){
+                                    String phone = _phoneController.text;
+                                    String code = _codeController.text;
+                                    print('账号：$phone,密码：$code');
+                                    _codeController.clear();
+                                    _phoneController.clear();
+                                }, 
+                                child:Text('登录',style:TextStyle(color:Colors.white)),
+                                )
+                            )
+                            ],
+                        )
+                        )
+                    )
+                    );
+                }
+                }
     - 常用滚动组件
         - SingleChildScrollView
+            - 特点：让单个子组件可以用滚动，所有内容一次性渲染，如果嵌套的Column或Row中有大量子项，可能导致性能问题，建议使用ListView
+            - 场景：长表单，设置页，内容不固定但总量不多的页面
+            - 用法：包裹一个子组件，让单个子组件具备滚动能力
+            - 子组件：只能包含一个子组件，如果滚动多个组件，通常将其前桃子啊Column或Row组件中
+            - 滚动方向：通过scrollDirection属性控制，默认为垂直方向（Axis.vertical）或水平方向（Axis.horizontal）
+            - controller：给组件的controller绑定ScrollController对象
+            - 控制滚动：绑定一个ScrollController对象给controller对象，使用animateTo/jumpTo方法控制滚动
+            - 滚动到顶部：controller.jumpTo(0)
+            - 滚动到底部：controller.jumpTo(controller.position.maxScrollExtent)
         - ListView
+            - 特点：线性列表，通过builder可以实现懒加载，性能优异
+            - 场景：聊天记录，新闻，常见的单列滚动的数据列表
+            - 作用：用于构建可滚动列表的核心部件，并提供流畅滚动体验
+            - 方式：提供多种构造函数
+                - 默认构造函数
+                    - 适用于静态数量有限数据的一次性构建所有表项
+                - ListView.builder
+                    - builder模式
+                    - 处理长列表或动态数据的首选和推荐方式
+                    - 方式：接收一个itemBuilder回调函数来按需构建列表项，通过itemCount控制列表长度
+                    - 优势：按需构建，不会再初始化时将所有列表项都创建，而是根据用户的滚动行为，动态地创建和销毁列表项
+                - ListView.separated
+                    - separated模式
+                    - 在ListView.builder的基础上，额外提供了构建分割线的能力
+                    - 方式：需要同时提供itemBuilder，separatorBuilder，itemCount三个属性
+            - 机制：采用按需渲染（懒加载），之构建当前可见区域的列表项，极大提升长列表性能
         - GridView
+            - 特点：网络布局列表，支持懒加载，可以固定列数
+            - 场景：图片强，商品网络，应用图标列表
         - CustomScrollView
+            - 特点：复杂布局方案，通过组合多个Silver组件实现滚动
+            - 场景：电商首页，社交App个人主页多个滚动紧密联动
         - PageView
+            - 特点：整页滚动效果，支持横向和纵向
+            - 场景：应用引导页，图片轮播图，书籍翻页
 - 组件通信 
     - 通信方式
         - 构造函数传递
@@ -879,6 +1001,7 @@ draft: false
             }
             }
 
+            //详情页
             class DetailPage extends StatefulWidget {
             const DetailPage({super.key});
 
@@ -899,6 +1022,281 @@ draft: false
                     Navigator.pop(context);
                     }, child: Text("返回列表页")
                     )
+                ),
+                );
+            }
+            }
+    - 命名路由
+        - 场景：应用页面增多后，使用命名路由课提升代码可维护性
+        - 用法：在MaterialApp中注册一个路由表（routes）并设置initialRoute（首页）
+        - 跳转方法
+            - pushNamed
+                - 进入新页面
+                - [A,B]->[A,B,C]
+                - 常规页面跳转，入列表页进入详情页
+            - pushReplacementNamed
+                - 替换当前页面
+                - [A,B]->[A,C]
+                - 登陆成功后跳转主页，并无法返回登录页
+            - pushNamedAndRemoveUntil
+                - 跳转新页面并清理栈
+                - [A,B,C,D]->[A,E]
+                - 退出登录后跳转登录页，并清空所有历史界面
+            - popAndPushNamed
+                - 返回并立即跳转新页面
+                - [A,B,C]->[A,B,D]
+                - 购物车页面结算后返回商品列表并同时跳转订单页
+            - popUntil
+                - 连续返回直到条件满足
+                - [A,B,C,D]->[A,B]
+                - 从设置页的深层级一件返回到住设置页面
+    - 传递参数
+        - 作用：通过路由传递参数实现页面间数据通信的常用方式
+        - 基础路由
+            - 传递参数：通过组件构造函数传递参数（父传子）
+            - 接收参数：通过组件构造函数接收参数（父传子）
+            - 接收时机：initState可获取到基础路由的构造函数传参
+        - 命名路由
+            - 传递参数：Navigator.pushNamed(context,地址，arguments:{参数})
+            - 接收参数：ModalRoute.of(context)?.settings.arguments
+            - 接收时机：initState获取不到路由参数。放置在Future.microtask（异步微任务）中
+            - ```
+                import 'package:flutter/material.dart';
+
+                void main() {
+                runApp(MainPage());
+                }
+
+                class MainPage extends StatelessWidget {
+                const MainPage({super.key});
+
+                @override
+                Widget build(BuildContext context) {
+                    return MaterialApp(
+                    initialRoute: "/list",
+                    routes: {
+                        "/list": (context) => ListPage(),
+                        "/detail": (context) => DetailPage(),
+                    },
+                    home: ListPage(),
+                    );
+                }
+                }
+
+                //列表页
+                class ListPage extends StatefulWidget {
+                const ListPage({super.key});
+
+                @override
+                State<ListPage> createState() => _ListPageState();
+                }
+
+                class _ListPageState extends State<ListPage> {
+                @override
+                Widget build(BuildContext context) {
+                    return Scaffold(
+                    appBar: AppBar(title: const Text("列表页")),
+                    body: ListView.builder(
+                        padding: EdgeInsets.all(10),
+                        itemCount: 20,
+                        itemBuilder: (BuildContext context, int index) {
+                        return GestureDetector(
+                            onTap: () {
+                            Navigator.pushNamed(context, "/detail",arguments: {"id":index+1});
+                            },
+                            child: Container(
+                            color: Colors.blue,
+                            margin: EdgeInsets.only(top: 10),
+                            height: 100,
+                            alignment: Alignment.center,
+                            child: Text(
+                                "列表项${index + 1}",
+                                style: TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                            ),
+                        );
+                        },
+                    ),
+                    );
+                }
+                }
+
+                //详情页
+                class DetailPage extends StatefulWidget {
+                @override
+                State<DetailPage> createState() => _DetailPageState();
+                }
+
+                class _DetailPageState extends State<DetailPage> {
+                late String _id;
+                @override
+                void initState(){
+                    super.initState();
+                    Future.microtask((){
+                    if (ModalRoute.of(context) != null) {
+                        Map<String, dynamic> params =
+                            ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+                        print("可以接收到参数");
+                        _id = params["id"].toString();
+                        setState(() {
+                        
+                        });
+                    }
+                    else{
+                        print("未接收到参数");
+                    }
+                    });
+                }
+
+                @override
+                Widget build(BuildContext context) {
+                    return Scaffold(
+                    appBar: AppBar(title: Text("详情页")),
+                    body: Center(
+                        child: Column(
+                        children: [
+                            TextButton(
+                            onPressed: () {
+                                print("返回列表项");
+                                Navigator.pop(context);
+                            },
+                            child: Text("返回上一个页面"),
+                            ),
+                            TextButton(
+                            onPressed: () {
+                                Navigator.pushNamed(context, "/list");
+                            },
+                            child: Text("去列表页$_id"),
+                            ),
+                        ],
+                        ),
+                    ),
+                    );
+                }
+                }
+    - 高级路由控制
+        - 场景：更复杂的场景，入需根据参数动态生成页面，或实现路由拦截，可使用onGenerateRoute和onUnknownRoute
+        - onGenerateRoute
+            - 允许你根据RouteSettings（包含路由名称和参数）动态创建不同的Route
+            - ```
+                import 'package:flutter/material.dart';
+
+                void main() {
+                runApp(MainPage());
+                }
+
+                class MainPage extends StatelessWidget {
+                const MainPage({super.key});
+
+                @override
+                Widget build(BuildContext context) {
+                    return MaterialApp(
+                    initialRoute: "/goodsList",
+                    routes: {
+                        "/goodsList":(context) => const GoodsList(),
+                    },
+                    onGenerateRoute: (settings) {
+                        print(settings.name);
+                        if (settings.name == "/cartList") {
+                        bool isLogin = true; // Simulate login status
+                        if(isLogin){
+                            return MaterialPageRoute(
+                            builder: (context) => const CartList());
+                        }
+                        else{
+                            return MaterialPageRoute(
+                            builder: (context) => const LoginPage());
+                        }
+                        }
+                    },
+                    );
+                }
+                }
+
+                class GoodsList extends StatefulWidget {
+                const GoodsList({super.key});
+
+                @override
+                State<GoodsList> createState() => _GoodsListState();
+                }
+
+                class _GoodsListState extends State<GoodsList> {
+                @override
+                Widget build(BuildContext context) {
+                    return Scaffold(
+                    appBar: AppBar(
+                        title: const Text('商品列表'),
+                    ),
+                    body: Center(
+                        child: TextButton(onPressed: () {
+                        Navigator.pushNamed(context, "/cartList");
+                        }, child: Text("加入购物车")),
+                    ),
+                    );  
+                }
+                }
+
+                class CartList extends StatefulWidget {
+                const CartList({super.key});
+
+                @override
+                State<CartList> createState() => _CartListState();
+                }
+
+                class _CartListState extends State<CartList> {
+                @override
+                Widget build(BuildContext context) {
+                    return Scaffold(
+                    appBar: AppBar(
+                        title: const Text('购物车列表'),
+                    ),
+                    body: Center(
+                        child: TextButton(onPressed: () {}, child: Text("去支付")),
+                    ),
+                    );
+                }
+                }
+
+                class LoginPage extends StatefulWidget {
+                const LoginPage({super.key});
+
+                @override
+                State<LoginPage> createState() => _LoginPageState();
+                }
+
+                class _LoginPageState extends State<LoginPage> {
+                @override
+                Widget build(BuildContext context) {
+                    return Scaffold(
+                    appBar: AppBar(
+                        title: const Text('登录页面'),
+                    ),
+                    body: Center(
+                        child: TextButton(onPressed: () {
+                        }, child: Text("去登录")),
+                    ),
+                    );
+                }
+                }
+    - 404路由
+        - onUnknownRoute
+            - 跳转一个未在路由表中注册页未在onGenerateRoute中处理的路由，会调用此回调，通常显示404界面
+        - ```
+            onUnknownRoute:(setting){
+                return MaterialPageRoute(builder:(context)=>Notfound())
+            }
+            class NotFound extends StatelessWidget {
+            const NotFound({super.key});
+
+            @override
+            Widget build(BuildContext context) {
+                return Container(
+                child: Center(
+                    child: Image.asset(
+                    "lib/assets/404.png",
+                    width: 300,
+                    height: 300,
+                    ),
                 ),
                 );
             }

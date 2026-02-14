@@ -512,9 +512,168 @@ draft: false
                     - 在ListView.builder的基础上，额外提供了构建分割线的能力
                     - 方式：需要同时提供itemBuilder，separatorBuilder，itemCount三个属性
             - 机制：采用按需渲染（懒加载），之构建当前可见区域的列表项，极大提升长列表性能
+            - ```
+                import 'package:flutter/material.dart';
+
+                void main() {
+                runApp(MainPage());
+                }
+
+                class MainPage extends StatefulWidget {
+                const MainPage({super.key});
+
+                @override
+                State<MainPage> createState() => _MainPageState();
+                }
+
+                class _MainPageState extends State<MainPage> {
+                @override
+                Widget build(BuildContext context) {
+                    return MaterialApp(
+                    home: Scaffold(
+                        appBar: AppBar(
+                        title: Text('登录'),
+                        ),
+                        body: ListView.separated(
+                        itemBuilder: (BuildContext context, int index){
+                            return Container(
+                            color: Colors.blue,
+                            width: double.infinity,
+                            height: 80,
+                            alignment: Alignment.center,
+                            child: Text(
+                                '第${index + 1}行',
+                                style: TextStyle(fontSize: 20, color: Colors.white)
+                                )
+                            );
+                        }, 
+                        separatorBuilder: ( BuildContext context, int index){
+                            return Container(
+                            height: 10,
+                            width: double.infinity,
+                            color: Colors.yellow,
+                            );
+                        },
+                        itemCount: 100
+                        ),
+                        // body:ListView.builder(
+                        //   itemCount: 100,
+                        //   itemBuilder: (BuildContext context,int index) {
+                        //     return Container(
+                        //       color: Colors.blue,
+                        //       width: double.infinity,
+                        //       height: 80,
+                        //       alignment: Alignment.center,
+                        //       margin: EdgeInsets.only(top:10),
+                        //       child: Text(
+                        //         '第${index + 1}行',
+                        //         style: TextStyle(fontSize: 20, color: Colors.white)
+                        //         )
+                        //     );
+                        //   },
+                        //   padding: EdgeInsets.all(20),
+                        //   // children: 
+                        //   //   List.generate(100, (index){
+                        //   //     return Container(
+                        //   //       color: Colors.blue,
+                        //   //       width: double.infinity,
+                        //   //       height: 80,
+                        //   //       alignment: Alignment.center,
+                        //   //       margin: EdgeInsets.only(top:10),
+                        //   //       child: Text(
+                        //   //         '第${index + 1}行',
+                        //   //         style: TextStyle(fontSize: 20, color: Colors.white)
+                        //   //         )
+                        //   //     );
+                        //   //   })
+                        // )
+                    ),
+                    );
+                }
+                }
         - GridView
             - 特点：网络布局列表，支持懒加载，可以固定列数
             - 场景：图片强，商品网络，应用图标列表
+            - 作用：用于创建二维可滚动网络布局
+            - 方式
+                - GridView默认构造方式（繁琐，很少使用）
+                - GridView.count基于固定列数的网络布局
+                - GridView.extent基于固定子项最大宽度/高度的网络布局
+                - GridView.builder用于网络项数量巨大或动态生成的情况，需要gridDelegate布局委托属性
+            - ```
+                import 'package:flutter/material.dart';
+
+                void main() {
+                runApp(MainPage());
+                }
+
+                class MainPage extends StatefulWidget {
+                const MainPage({super.key});
+
+                @override
+                State<MainPage> createState() => _MainPageState();
+                }
+
+                class _MainPageState extends State<MainPage> {
+                @override
+                Widget build(BuildContext context) {
+                    return MaterialApp(
+                    home: Scaffold(
+                        appBar: AppBar(
+                        title: Text('登录'),
+                        ),
+                        body: GridView.builder(
+                        padding: EdgeInsets.all(10),
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 100
+                            ,mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                            ),
+                        // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        //   crossAxisCount: 3,
+                        //   mainAxisSpacing: 10,
+                        //   crossAxisSpacing: 10,
+                        //   ), 
+                        itemBuilder: (context, index){
+                            return Container(
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.all(10),
+                            color:Colors.blue,
+                            child: Text('第${index+1}个', style: TextStyle(color: Colors.white)),
+                            );
+                        },
+                        ),
+                        // body: GridView.extent(
+                        //   padding: EdgeInsets.all(10),
+                        //   maxCrossAxisExtent: 100,
+                        //   mainAxisSpacing: 10,
+                        //   crossAxisSpacing: 10,
+                        //   children:List.generate(100, (index){
+                        //     return Container(
+                        //       alignment: Alignment.center,
+                        //       color:Colors.blue,
+                        //       child: Text('第${index+1}个', style: TextStyle(color: Colors.white)),
+                        //     );
+                        //   })
+                        //   )
+                        // body:GridView.count(
+                        //   scrollDirection: Axis.horizontal,
+                        //   padding: EdgeInsets.all(10),
+                        //   crossAxisCount: 3,
+                        //   mainAxisSpacing: 10,
+                        //   crossAxisSpacing: 10,
+                        //   children: List.generate(100, (index){
+                        //     return Container(
+                        //       alignment: Alignment.center,
+                        //       color:Colors.blue,
+                        //       child: Text('第${index+1}个', style: TextStyle(color: Colors.white)),
+                        //     );
+                        //   }),
+                        //   )
+                    ),
+                    );
+                }
+                }
         - CustomScrollView
             - 特点：复杂布局方案，通过组合多个Silver组件实现滚动
             - 场景：电商首页，社交App个人主页多个滚动紧密联动

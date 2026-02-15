@@ -677,9 +677,205 @@ draft: false
         - CustomScrollView
             - 特点：复杂布局方案，通过组合多个Silver组件实现滚动
             - 场景：电商首页，社交App个人主页多个滚动紧密联动
+            - 作用：用于组合多个可滚动组件。实现统一协调的滚动效果
+            - Silver：Flutter中描述可滚动试图内部一部分内容的组件，是滚动视图的切片
+            - 用法：用silvers属性接收一个Silver组件列表
+            - Silver组件对应关系
+                - SilverList=>ListView
+                - SilverGrid=>GridView
+                - SilverAppBar=>AppBar
+                - SilverPadding=>Padding
+                - SilverToBoxAdapter=>ToBoxAdapter
+                - SilverPersistentHeader粘性吸项
         - PageView
             - 特点：整页滚动效果，支持横向和纵向
             - 场景：应用引导页，图片轮播图，书籍翻页
+            - 作用：用于实现分页滚动视图
+            - 方式
+                - 默认构造方式
+                - PageView.builder
+            - 优势：支持懒加载
+            - 跳转控制
+                - 控制器：PageView绑定controller属性，对象类型PageController
+                - 切换方法：controller.jumpPage/animateToPage
+            - ```
+                import 'package:flutter/material.dart';
+
+                void main() {
+                runApp(MainPage());
+                }
+
+                class MainPage extends StatefulWidget {
+                const MainPage({super.key});
+
+                @override
+                State<MainPage> createState() => _MainPageState();
+                }
+
+                class _MainPageState extends State<MainPage> {
+                int _currentPage = 0; //当前激活索引
+                final PageController _pageController = PageController();
+                @override
+                Widget build(BuildContext context) {
+                    return MaterialApp(
+                    home: Scaffold(
+                        appBar: AppBar(title: Text('登录')),
+                        body: CustomScrollView(
+                        slivers: [
+                            SliverToBoxAdapter(
+                            child: Stack(
+                                children: [
+                                Container(
+                                    color: Colors.blue,
+                                    alignment: Alignment.center,
+                                    height: 260,
+                                    child: PageView.builder(
+                                    controller: _pageController,
+                                    itemCount: 10,
+                                    itemBuilder: (context, index) {
+                                        return Container(
+                                        color: Colors.blue,
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                            '轮播图${index + 1}',
+                                            style: TextStyle(fontSize: 30, color: Colors.white),
+                                        ),
+                                        );
+                                    },
+                                    ),
+                                ),
+                                Positioned(
+                                    bottom: 0,
+                                    left: 0,
+                                    right: 0,
+                                    child: Container(
+                                    height: 30,
+                                    alignment: Alignment.center,
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: List.generate(10, (index) {
+                                        return GestureDetector(
+                                            onTap: () {
+                                            //_pageController.jumpToPage(index);
+                                            _pageController.animateToPage(
+                                                index,
+                                                duration: Duration(milliseconds: 300),
+                                                curve: Curves.linear,
+                                            );
+                                            setState(() {
+                                                _currentPage = index;
+                                            });
+                                            },
+                                            child: Container(
+                                            width: 10,
+                                            height: 10,
+                                            margin: EdgeInsets.symmetric(horizontal: 5),
+                                            decoration: BoxDecoration(
+                                                color: _currentPage == index
+                                                    ? Colors.red
+                                                    : Colors.white,
+                                                borderRadius: BorderRadius.circular(5),
+                                            ),
+                                            ),
+                                        );
+                                        }),
+                                    ),
+                                    ),
+                                ),
+                                ],
+                            ),
+                            ),
+                            // SliverToBoxAdapter(
+                            //   child: Container(
+                            //     color: Colors.blue,
+                            //     alignment: Alignment.center,
+                            //     height: 260,
+                            //     child: Text('轮播图',style: TextStyle(fontSize: 30,color: Colors.white)),
+                            //   ),
+                            // ),
+                            SliverToBoxAdapter(child: SizedBox(height: 10)),
+                            SliverPersistentHeader(
+                            delegate: _StickyCategory(),
+                            pinned: true, //是否固定在顶部
+                            ),
+                            SliverToBoxAdapter(child: SizedBox(height: 10)),
+                            SliverGrid.count(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                            children: List.generate(100, (index) {
+                                return Container(
+                                color: Colors.blue,
+                                alignment: Alignment.center,
+                                child: Text(
+                                    '网格项${index + 1}',
+                                    style: TextStyle(fontSize: 20, color: Colors.white),
+                                ),
+                                );
+                            }),
+                            ),
+                            // SliverList.separated(
+                            //   itemCount: 100,
+                            //   itemBuilder: (BuildContext context, int index) {
+                            //     return Container(
+                            //       height: 100,
+                            //       color: Colors.blue,
+                            //       alignment: Alignment.center,
+                            //       child: Text('列表项${index+1}',style: TextStyle(fontSize: 20,color: Colors.white)),
+                            //     );
+                            //   },
+                            //   separatorBuilder: (BuildContext context, int index) {
+                            //     return SizedBox(height: 20);
+                            //   },
+                            //   )
+                        ],
+                        ),
+                    ),
+                    );
+                }
+                }
+
+                class _StickyCategory extends SliverPersistentHeaderDelegate {
+                @override
+                Widget build(
+                    BuildContext context,
+                    double shrinkOffset,
+                    bool overlapsContent,
+                ) {
+                    return Container(
+                    color: Colors.white,
+                    alignment: Alignment.center,
+                    height: 60,
+                    child: ListView.builder(
+                        itemCount: 30,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                        return Container(
+                            width: 100,
+                            margin: EdgeInsets.symmetric(horizontal: 10),
+                            color: Colors.blue,
+                            alignment: Alignment.center,
+                            child: Text(
+                            '分类${index + 1}',
+                            style: TextStyle(fontSize: 20, color: Colors.white),
+                            ),
+                        );
+                        },
+                    ),
+                    );
+                }
+
+                @override
+                double get maxExtent => 60; //最大展开高度
+
+                @override
+                double get minExtent => 60; //最小折叠高度
+
+                @override
+                bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+                    return false; //不需要重建
+                }
+                }
 - 组件通信 
     - 通信方式
         - 构造函数传递
